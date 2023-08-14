@@ -14,8 +14,10 @@ struct Session {
     expiration: Option<time::SystemTime>
 }
 
+
 type Intensity = f32; 
 type Shocker_ID = usize; 
+/// A single action to be preformed on a single Shocker
 enum Action {
     Beep(Shocker_ID, time::Duration),
     Buzz(Shocker_ID, time::Duration, Intensity),
@@ -23,11 +25,13 @@ enum Action {
     Shock(Shocker_ID, time::Duration, Intensity)
 }
 
+/// A named series of actions to preform in order for a number of Shocker ids
 struct Pattern {
     alias: String,
-    timeline: Vec<Action>
+    timelines: Vec<Vec<Action>>
 }
 
+/// A set of restictions for valid shocker commands, and 
 struct Permissions {
     max_beep: time::Duration,
     max_buzz: (time::Duration, Intensity),
@@ -35,10 +39,16 @@ struct Permissions {
     patterns: HashSet<Pattern>
 } 
 
+/// A request for the host to send shome shock or other action
+enum ShockerRequest {
+    Action(Action),
+    Pattern(Pattern)
+} 
+
 type Username = String;
 type PublicKey = String;
+/// Definitions for different client types and their relavent data
 enum Client {
-    Root(Username, PublicKey),
     Verified(Username, PublicKey, Permissions),
     Guest(Username, Permissions)
 } 
@@ -46,17 +56,17 @@ enum Client {
 /// This is the primary runtime for the OpenShock-Hub host server. All communications with remote clients will be managed through here.
 struct OpenShockHubHost {
     router: axum::Router,
-    clients: HashSet<Client>,
+    client_profiles: HashSet<Client>,
     sessions: HashMap<Session, Client>
 }
 
 impl  OpenShockHubHost {
 
-    fn new (clients: HashSet<Client> ) -> Self {
+    fn new (client_profiles: HashSet<Client> ) -> Self {
         return Self {
             router: axum::Router::new(),
             sessions: HashMap::new(),
-            clients
+            client_profiles
         };
     }
 
@@ -80,7 +90,9 @@ impl  OpenShockHubHost {
         todo!()
     }
 
-    async fn cmd_request (self, session: Token, ) -> Result<String, StatusCode> {
+    /// compare request against client permissions. If valid return success,
+    /// else return request exceedes premission level
+    async fn shock_request (self, session: Token, request: ShockerRequest) -> Result<String, StatusCode> {
         todo!()
     }
 }
