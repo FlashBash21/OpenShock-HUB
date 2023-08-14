@@ -1,4 +1,13 @@
-use axum::{self, http::StatusCode};
+use axum::{
+    self,
+    routing::get,
+    Router, 
+    http::{
+        Request,
+        Response,
+        StatusCode
+    },
+};
 use oauth2;
 
 use std::time;
@@ -64,7 +73,11 @@ impl  OpenShockHubHost {
 
     fn new (client_profiles: HashSet<Client> ) -> Self {
         return Self {
-            router: axum::Router::new(),
+            router: axum::Router::new()
+            .route("/:username/init/:state", get())
+            .route("/:session/close", get())
+            .route("/:session/permissions", get())
+            .route("/:session/shock", get()),
             sessions: HashMap::new(),
             client_profiles
         };
@@ -86,13 +99,13 @@ impl  OpenShockHubHost {
         todo!()
     }
 
-    async fn permissions_request (self, session: Token) -> Result<Session, StatusCode> {
+    async fn permissions (self, session: Token) -> Result<Session, StatusCode> {
         todo!()
     }
 
     /// compare request against client permissions. If valid return success,
     /// else return request exceedes premission level
-    async fn shock_request (self, session: Token, request: ShockerRequest) -> Result<String, StatusCode> {
+    async fn shock (self, session: Token, request: ShockerRequest) -> Result<String, StatusCode> {
         todo!()
     }
 }
