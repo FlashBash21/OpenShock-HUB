@@ -1,28 +1,17 @@
 use axum::{
-    self,
+    response::{Html, Response},
     routing::get,
-    Router, 
-    http::{
-        Request,
-        Response,
-        StatusCode
-    },
+    Router,
 };
+
 use oauth2;
 
-use std::time;
+use std::{time, string};
 use std::string::String;
 use std::collections::{
     hash_map::HashMap,
     hash_set::HashSet
 };
-
-type Token = String;
-struct Session {
-    token: Token,
-    expiration: Option<time::SystemTime>
-}
-
 
 type Intensity = f32; 
 type Shocker_ID = usize; 
@@ -74,40 +63,15 @@ impl  OpenShockHubHost {
     fn new (client_profiles: HashSet<Client> ) -> Self {
         return Self {
             router: axum::Router::new()
-            .route("/:username/init/:state", get())
-            .route("/:session/close", get())
-            .route("/:session/permissions", get())
-            .route("/:session/shock", get()),
+            .route("/api/", get(Self::auth)),
             sessions: HashMap::new(),
             client_profiles
         };
     }
 
-    // Handlers 
-
-    /// Generate a new session token and add it to sessions. 
-    /// Will automatically check clients list for username. 
-    /// If no username found creates guest client session and returns success. 
-    /// Else will try to validate client by handshake using public key data.
-    /// If client gives correct response Create session with stored client data and permissions.
-    /// Else give err "failed verification for username if attemtping to use a guest client change usernames, otherwise ensure that the host has entered the correct public key"   
-    async fn new_session (self, username: Username) -> Result<String, StatusCode> {
-        todo!()
-    }
-
-    async fn close_session (self, session: Token) -> Result<String, StatusCode> {
-        todo!()
-    }
-
-    async fn permissions (self, session: Token) -> Result<Session, StatusCode> {
-        todo!()
-    }
-
-    /// compare request against client permissions. If valid return success,
-    /// else return request exceedes premission level
-    async fn shock (self, session: Token, request: ShockerRequest) -> Result<String, StatusCode> {
-        todo!()
-    }
+    async fn app(self) {
+        
+    } 
 }
 
 
